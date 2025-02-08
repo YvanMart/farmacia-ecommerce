@@ -1,77 +1,48 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { CartItem } from '../types/CartItem';
 
 const CartContext = createContext({
   cartItems: [] as CartItem[],
-  addToCart: (product: Product) => {},
-  cartCount: 0, // Contar unidades
+  addToCart: (product: CartItem) => {},
+  removeFromCart: (id: number) => {},
+  cartCount: 0,
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [availableStock, setAvailableStock] = useState<Record<number, number>>(
-    {}
-  );
 
-  const addToCart = (product: Product) => {
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const addToCart = (product: CartItem) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
-      const stockAvailable = availableStock[product.id] ?? product.quantityAvailable;
-
-      console.log(`Intentando agregar producto: ${product.name}`);
-      console.log(`Stock disponible antes de agregar: ${stockAvailable}`);
-      console.log(`Carrito actual:`, prev);
-
       if (existing) {
-        if (existing.quantity <= stockAvailable) {
-          console.log(
-            `Producto ya en carrito, aumentando cantidad de ${existing.quantity} a ${existing.quantity + 1}`
-          );
-
-          setAvailableStock((prevStock) => {
-            const updatedStock = { ...prevStock, [product.id]: stockAvailable - 1 };
-            console.log(`Stock disponible actualizado: ${updatedStock[product.id]}`);
-            return updatedStock;
-          });
-
-          return prev.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        } else {
-          console.warn(`No se puede agregar más productos, stock agotado`);
-        }
-      } else if (stockAvailable > 0) {
-        console.log(`Producto agregado al carrito con cantidad: 1`);
-
-        setAvailableStock((prevStock) => {
-          const updatedStock = { ...prevStock, [product.id]: stockAvailable - 1 };
-          console.log(`Stock disponible actualizado: ${updatedStock[product.id]}`);
-          return updatedStock;
-        });
-
-        return [
-          ...prev,
-          {
-            id: product.id,
-            name: product.name,
-            quantity: 1,
-            price: product.price,
-            offer_price: product.offer_price,
-          },
-        ];
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
       }
-
-      console.warn(`No se puede agregar el producto, stock agotado`);
-      return prev;
     });
+  };
+
+  const removeFromCart = (id: number) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, cartCount }}>
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, cartCount }}>
       {children}
     </CartContext.Provider>
   );

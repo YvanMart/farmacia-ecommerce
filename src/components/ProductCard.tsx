@@ -3,13 +3,11 @@ import '../styles/global.css';
 import { useCart } from '../context/CartContext';
 
 const ProductCard = ({ product }: { product: Product }) => {
-//  const { addToCart } = useCart();
   const { addToCart, cartItems } = useCart();
 
   const cartItem = cartItems.find((item) => item.id === product.id);
   const stockRemaining = product.quantityAvailable - (cartItem?.quantity || 0);
   const isOutOfStock = stockRemaining <= 0;
-  //const isOutOfStock = product.quantityAvailable === 0;
 
   return (
     <div className="product-card">

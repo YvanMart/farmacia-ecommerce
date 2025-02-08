@@ -21,6 +21,6 @@ export const getProducts = async (): Promise<Product[]> => {
     }, {})
   );
 
-  console.log(uniqueProducts);
+  //console.log(uniqueProducts);
   return uniqueProducts;
 };

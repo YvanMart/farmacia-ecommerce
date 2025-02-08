@@ -9,7 +9,7 @@ const ProductList = () => {
   useEffect(() => {
     const loadProducts = async () => {
       const data = await getProducts();
-      console.log(data);
+      //console.log(data);
       setProducts(data);
     };
     loadProducts();
