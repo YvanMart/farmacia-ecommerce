@@ -1,7 +1,7 @@
 import { useCart } from "../context/CartContext";
 import { useEffect } from "react";
 import "../styles/cartPage.css";
-import Link from 'next/link'; // Importa Link si estás usando Next.js
+import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const CartPage = () => {
@@ -21,8 +21,8 @@ const CartPage = () => {
   return (
     <div className="cart-container">
       <div className="cart-header">
-        <Link href="/"> {/* Enlace a la página de inicio */}
-          <div className="back-arrow">←</div> {/* Usa un div en lugar de <a> */}
+        <Link href="/"> {}
+          <div className="back-arrow">←</div> {}
         </Link>
         <h1>Carrito de Compras</h1>
       </div>
