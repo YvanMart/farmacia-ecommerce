@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { CartItem } from '../types/CartItem';
 
 const CartContext = createContext({
   cartItems: [] as CartItem[],
@@ -50,7 +51,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return updatedStock;
         });
 
-        return [...prev, { id: product.id, name: product.name, quantity: 1 }];
+        return [
+          ...prev,
+          {
+            id: product.id,
+            name: product.name,
+            quantity: 1,
+            price: product.price,
+            offer_price: product.offer_price,
+          },
+        ];
       }
 
       console.warn(`No se puede agregar el producto, stock agotado`);
